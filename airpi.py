@@ -167,11 +167,16 @@ mainConfig = ConfigParser.SafeConfigParser()
 mainConfig.read("settings.cfg")
 
 lastUpdated = 0
+#get the config variables
 delayTime = mainConfig.getfloat("Main","uploadDelay")
 redPin = mainConfig.getint("Main","redPin")
 greenPin = mainConfig.getint("Main","greenPin")
+cronScheduled = mainConfig.getboolean("Main","cronScheduled")
+
 GPIO.setup(redPin,GPIO.OUT,initial=GPIO.LOW)
 GPIO.setup(greenPin,GPIO.OUT,initial=GPIO.LOW)
+
+#run loop or only once if scheduled via cron
 while True:
 	curTime = time.time()
 	if (curTime-lastUpdated)>delayTime:
@@ -201,3 +206,6 @@ while True:
 		time.sleep(1)
 		GPIO.output(greenPin,GPIO.LOW)
 		GPIO.output(redPin,GPIO.LOW)
+        #run only once if airpi is scheduled via external cron
+        if cronScheduled:
+                break
